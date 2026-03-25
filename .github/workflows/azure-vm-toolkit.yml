@@ -1,0 +1,109 @@
+name: Azure VM Toolkit
+
+on:
+
+  workflow_dispatch:
+    inputs:
+
+      action:
+        description: "Action to perform"
+        required: true
+        type: choice
+        options:
+          - start
+          - stop
+          - status
+          - snapshot
+
+      vmName:
+        description: "Virtual Machine name"
+        required: true
+        default: "server2022"
+
+      resourceGroup:
+        description: "Resource Group"
+        required: true
+        default: "RG-Lab"
+
+
+  schedule:
+    - cron: "0 20 * * 1-5"   # optional automation (UTC)
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  vm-management:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+
+    - name: Azure Login (OIDC)
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+
+    - name: Install Azure PowerShell
+      shell: pwsh
+      run: |
+        Install-Module Az -Repository PSGallery -Scope CurrentUser -Force
+
+
+    - name: Execute PowerShell script
+      shell: pwsh
+      run: |
+
+        $action = "${{ github.event.inputs.action }}"
+        $vm = "${{ github.event.inputs.vmName }}"
+        $rg = "${{ github.event.inputs.resourceGroup }}"
+
+        Write-Host "Action: $action"
+        Write-Host "VM: $vm"
+        Write-Host "Resource Group: $rg"
+
+        switch ($action) {
+
+          "start" {
+
+            ./modules/vm-start.ps1 `
+              -VMName $vm `
+              -ResourceGroup $rg
+          }
+
+          "stop" {
+
+            ./modules/vm-stop.ps1 `
+              -VMName $vm `
+              -ResourceGroup $rg
+          }
+
+          "status" {
+
+            ./modules/vm-status.ps1 `
+              -VMName $vm `
+              -ResourceGroup $rg
+          }
+
+          "snapshot" {
+
+            ./modules/vm-snapshot.ps1 `
+              -VMName $vm `
+              -ResourceGroup $rg
+          }
+
+          default {
+
+            throw "Invalid action"
+          }
+
+        }
