@@ -69,8 +69,8 @@ jobs:
             "start"    { ./modules/vm-start.ps1 -VMName $vm -ResourceGroup $rg }
             "stop"     { ./modules/vm-stop.ps1 -VMName $vm -ResourceGroup $rg }
             "status"   { ./modules/vm-status.ps1 -VMName $vm -ResourceGroup $rg }
-	    "start-tag" { ./modules/vm-start-tag.ps1 }
-	    "stop-tag" { ./modules/vm-stop-tag.ps1 }
+            "start-tag" { ./modules/vm-start-tag.ps1 }
+            "stop-tag" { ./modules/vm-stop-tag.ps1 }
             "snapshot" { ./modules/vm-snapshot.ps1 -VMName $vm -ResourceGroup $rg }
             default    { throw "Invalid action" }
           }
