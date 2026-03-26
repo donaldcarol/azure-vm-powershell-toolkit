@@ -64,13 +64,83 @@ jobs:
           Write-Host "Action: $action"
           Write-Host "VM: $vm"
           Write-Host "Resource Group: $rg"
+          if ($vmName -eq "all") { 
+            Write-Host "Running action on ALL VMs"
+
+          $vms = Get-AzVM
+
+          $vms | ForEach-Object -Parallel {
+
+          $name = $_.Name
+          $rg = $_.ResourceGroupName
+
+          Write-Host "Processing VM $name"
+
+          switch ($using:action) {
+
+            "start" {
+
+                Start-AzVM `
+                    -Name $name `
+                    -ResourceGroupName $rg
+            }
+
+            "stop" {
+
+                Stop-AzVM `
+                    -Name $name `
+                    -ResourceGroupName $rg `
+                    -Force
+            }
+
+            "status" {
+
+                Get-AzVM `
+                    -Name $name `
+                    -ResourceGroupName $rg `
+                    -Status
+            }
+
+          }
+          }
+          }
+          else {
 
           switch ($action) {
-            "start"    { ./modules/vm-start.ps1 -VMName $vm -ResourceGroup $rg }
-            "stop"     { ./modules/vm-stop.ps1 -VMName $vm -ResourceGroup $rg }
-            "status"   { ./modules/vm-status.ps1 -VMName $vm -ResourceGroup $rg }
-            "start-tag" { ./modules/vm-start-tag.ps1 }
-            "stop-tag" { ./modules/vm-stop-tag.ps1 }
-            "snapshot" { ./modules/vm-snapshot.ps1 -VMName $vm -ResourceGroup $rg }
-            default    { throw "Invalid action" }
+
+          "start" {
+
+            ./modules/vm-start.ps1 `
+              -VMName $vmName `
+              -ResourceGroup $rg
+          }
+
+          "stop" {
+ 
+            ./modules/vm-stop.ps1 `
+              -VMName $vmName `
+              -ResourceGroup $rg
+          }
+
+           "status" {
+
+            ./modules/vm-status.ps1 `
+              -VMName $vmName `
+              -ResourceGroup $rg
+          }
+
+          "snapshot" {
+
+            ./modules/vm-snapshot.ps1 `
+              -VMName $vmName `
+              -ResourceGroup $rg
+          }
+
+          default {
+
+            throw "Invalid action"
+          }
+
+          }
+
           }
