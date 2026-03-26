@@ -1,11 +1,13 @@
-![Azure VM Toolkit](https://github.com/donaldcarol/azure-vm-powershell-toolkit/actions/workflows/azure-vm-toolkit.yml/badge.svg)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Azure](https://img.shields.io/badge/Azure-Identity-blue)
-![CI](https://img.shields.io/badge/CI-GitHub%20Actions-success)
-![Security](https://img.shields.io/badge/Security-OIDC%20Enabled-brightgreen)
-![Powershell](https://img.shields.io/badge/Powershell-automation-red)
-
 # Azure VM Automation Toolkit
+
+![Azure VM Toolkit](https://github.com/donaldcarol/azure-vm-powershell-toolkit/actions/workflows/azure-vm-toolkit.yml/badge.svg)
+![PowerShell](https://img.shields.io/badge/PowerShell-7-blue)
+![Azure](https://img.shields.io/badge/Azure-Cloud-blue)
+![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-black)
+![OIDC](https://img.shields.io/badge/Auth-OIDC-green)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![VM Automation](https://img.shields.io/badge/Feature-VM%20Automation-blue)
+![Parallel Execution](https://img.shields.io/badge/Feature-Parallel-green)
 
 PowerShell automation toolkit for Azure VM lifecycle management using GitHub Actions and OIDC authentication.
 
