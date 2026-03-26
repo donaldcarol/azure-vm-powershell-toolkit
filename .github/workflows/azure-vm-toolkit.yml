@@ -7,13 +7,13 @@ on:
         description: "Action to perform"
         required: true
         type: choice
-       	options:
-  	- start
-  	- stop
-  	- status
- 	- snapshot
-  	- start-tag
-  	- stop-tag
+        options:
+         - start
+         - stop  
+         - status
+         - snapshot
+         - start-tag
+         - stop-tag
       vmName:
         description: "Virtual Machine name"
         required: true
