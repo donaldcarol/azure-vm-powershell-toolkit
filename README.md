@@ -4,7 +4,7 @@
 ![Azure](https://img.shields.io/badge/Azure-Identity-blue)
 ![CI](https://img.shields.io/badge/CI-GitHub%20Actions-success)
 ![Security](https://img.shields.io/badge/Security-OIDC%20Enabled-brightgreen)
-![IaC Ready](https://img.shields.io/badge/IaC-Ready-informational)
+![Powershell](https://img.shields.io/badge/Powershell-automation-red)
 
 # Azure VM Automation Toolkit
 
@@ -19,6 +19,5 @@ Features:
 Technologies:
 - PowerShell 7
 - Azure PowerShell (Az module)
-- GitHub Actions
-- Azure RBAC
+- GitHub Actions- Azure RBAC
 - OIDC federation
