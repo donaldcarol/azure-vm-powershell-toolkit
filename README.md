@@ -1,5 +1,6 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/donaldcarol/azure-vm-powershell-toolkit)
 ![GitHub repo size](https://img.shields.io/github/repo-size/donaldcarol/azure-vm-powershell-toolkit)
+![Azure VM Toolkit](https://github.com/donaldcarol/azure-vm-powershell-toolkit/actions/workflows/azure-vm-toolkit.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Azure](https://img.shields.io/badge/Azure-Identity-blue)
 ![CI](https://img.shields.io/badge/CI-GitHub%20Actions-success)
