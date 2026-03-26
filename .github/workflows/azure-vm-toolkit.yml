@@ -62,7 +62,7 @@ jobs:
           $rg = "${{ github.event.inputs.resourceGroup }}"
 
           Write-Host "Action: $action"
-          Write-Host "VM: $vm"
+          Write-Host "VM: $vmName"
           Write-Host "Resource Group: $rg"
           if ($vmName -eq "all") { 
             Write-Host "Running action on ALL VMs"
@@ -74,7 +74,7 @@ jobs:
           $name = $_.Name
           $rg = $_.ResourceGroupName
 
-          Write-Host "Processing VM $name"
+          Write-Host "Processing VM $name in RG $resourceGroupName"
 
           switch ($using:action) {
 
