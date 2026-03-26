@@ -21,3 +21,12 @@ Technologies:
 - Azure PowerShell (Az module)
 - GitHub Actions- Azure RBAC
 - OIDC federation
+
+## Features
+
+- Start, stop, status and snapshot operations for Azure VMs
+- Support for single VM execution
+- Support for `vmName=all` across multiple resource groups
+- Tag-based VM operations
+- Secure authentication with GitHub Actions OIDC
+- Parallel execution for faster multi-VM management
