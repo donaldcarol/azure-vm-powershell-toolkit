@@ -53,7 +53,7 @@ jobs:
           Get-AzContext
           Get-AzSubscription | Format-Table Name, Id, State
 
-          - name: Execute PowerShell script
+      - name: Execute PowerShell script
         shell: pwsh
         run: |
           $action = "${{ github.event.inputs.action }}"
