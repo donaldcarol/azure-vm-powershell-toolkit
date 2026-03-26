@@ -1,10 +1,8 @@
 name: Azure VM Toolkit
 
 on:
-
   workflow_dispatch:
     inputs:
-
       action:
         description: "Action to perform"
         required: true
@@ -14,133 +12,61 @@ on:
           - stop
           - status
           - snapshot
-
       vmName:
         description: "Virtual Machine name"
         required: true
         default: "server2022"
-
       resourceGroup:
         description: "Resource Group"
         required: true
         default: "RG-Lab"
-
-  schedule:
-    - cron: "0 20 * * 1-5"   # 20:00 UTC (ex: auto stop VM)
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-
-# -------------------------
-# MANUAL EXECUTION
-# -------------------------
-
-  vm-manual:
-
-    if: github.event_name == 'workflow_dispatch'
-
+  vm-management:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
 
-    - name: Azure Login (OIDC)
-      uses: azure/login@v2
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Install Azure PowerShell
+        shell: pwsh
+        run: |
+          Install-Module Az -Repository PSGallery -Scope CurrentUser -Force
 
-    - name: Install Azure PowerShell
-      shell: pwsh
-      run: |
-        Install-Module Az -Repository PSGallery -Scope CurrentUser -Force
+      - name: Verify Azure PowerShell context
+        shell: pwsh
+        run: |
+          Get-AzContext
+          Get-AzSubscription | Format-Table Name, Id, State
 
-    - name: Execute manual action
-      shell: pwsh
-      run: |
+      - name: Execute PowerShell script
+        shell: pwsh
+        run: |
+          $action = "${{ github.event.inputs.action }}"
+          $vm = "${{ github.event.inputs.vmName }}"
+          $rg = "${{ github.event.inputs.resourceGroup }}"
 
-        $action = "${{ github.event.inputs.action }}"
-        $vm = "${{ github.event.inputs.vmName }}"
-        $rg = "${{ github.event.inputs.resourceGroup }}"
+          Write-Host "Action: $action"
+          Write-Host "VM: $vm"
+          Write-Host "Resource Group: $rg"
 
-        Write-Host "Action: $action"
-        Write-Host "VM: $vm"
-        Write-Host "Resource Group: $rg"
-
-        switch ($action) {
-
-          "start" {
-            ./modules/vm-start.ps1 `
-              -VMName $vm `
-              -ResourceGroup $rg
+          switch ($action) {
+            "start"    { ./modules/vm-start.ps1 -VMName $vm -ResourceGroup $rg }
+            "stop"     { ./modules/vm-stop.ps1 -VMName $vm -ResourceGroup $rg }
+            "status"   { ./modules/vm-status.ps1 -VMName $vm -ResourceGroup $rg }
+            "snapshot" { ./modules/vm-snapshot.ps1 -VMName $vm -ResourceGroup $rg }
+            default    { throw "Invalid action" }
           }
-
-          "stop" {
-            ./modules/vm-stop.ps1 `
-              -VMName $vm `
-              -ResourceGroup $rg
-          }
-
-          "status" {
-            ./modules/vm-status.ps1 `
-              -VMName $vm `
-              -ResourceGroup $rg
-          }
-
-          "snapshot" {
-            ./modules/vm-snapshot.ps1 `
-              -VMName $vm `
-              -ResourceGroup $rg
-          }
-
-          default {
-            throw "Invalid action"
-          }
-
-        }
-
-# -------------------------
-# SCHEDULED AUTOMATION
-# -------------------------
-
-  vm-scheduled-stop:
-
-    if: github.event_name == 'schedule'
-
-    runs-on: ubuntu-latest
-
-    steps:
-
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Azure Login (OIDC)
-      uses: azure/login@v2
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-    - name: Install Azure PowerShell
-      shell: pwsh
-      run: |
-        Install-Module Az -Repository PSGallery -Scope CurrentUser -Force
-
-    - name: Stop VM automatically
-      shell: pwsh
-      run: |
-
-        $vm = "server2022"
-        $rg = "RG-Lab"
-
-        Write-Host "Scheduled stop for VM $vm"
-
-        ./modules/vm-stop.ps1 `
-          -VMName $vm `
-          -ResourceGroup $rg
