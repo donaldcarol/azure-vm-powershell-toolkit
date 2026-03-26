@@ -54,93 +54,91 @@ jobs:
           Get-AzContext
           Get-AzSubscription | Format-Table Name, Id, State
 
-      - name: Execute PowerShell script
+          - name: Execute PowerShell script
         shell: pwsh
         run: |
           $action = "${{ github.event.inputs.action }}"
-          $vm = "${{ github.event.inputs.vmName }}"
+          $vmName = "${{ github.event.inputs.vmName }}"
           $rg = "${{ github.event.inputs.resourceGroup }}"
 
           Write-Host "Action: $action"
           Write-Host "VM: $vmName"
           Write-Host "Resource Group: $rg"
-          if ($vmName -eq "all") { 
+
+          if ($vmName -eq "all") {
             Write-Host "Running action on ALL VMs"
 
-          $vms = Get-AzVM
+            $vms = Get-AzVM
 
-          $vms | ForEach-Object -Parallel {
+            $vms | ForEach-Object -Parallel -ThrottleLimit 5 {
+              $name = $_.Name
+              $resourceGroupName = $_.ResourceGroupName
 
-          $name = $_.Name
-          $rg = $_.ResourceGroupName
+              Write-Host "Processing VM $name in RG $resourceGroupName"
 
-          Write-Host "Processing VM $name in RG $resourceGroupName"
-
-          switch ($using:action) {
-
-            "start" {
-
-                Start-AzVM `
+              switch ($using:action) {
+                "start" {
+                  Start-AzVM `
                     -Name $name `
-                    -ResourceGroupName $rg
-            }
+                    -ResourceGroupName $resourceGroupName
+                }
 
-            "stop" {
-
-                Stop-AzVM `
+                "stop" {
+                  Stop-AzVM `
                     -Name $name `
-                    -ResourceGroupName $rg `
+                    -ResourceGroupName $resourceGroupName `
                     -Force
-            }
+                }
 
-            "status" {
-
-                Get-AzVM `
+                "status" {
+                  Get-AzVM `
                     -Name $name `
-                    -ResourceGroupName $rg `
+                    -ResourceGroupName $resourceGroupName `
                     -Status
-            }
+                }
 
-          }
-          }
+                default {
+                  throw "Action '$using:action' is not supported with vmName=all"
+                }
+              }
+            }
           }
           else {
+            switch ($action) {
+              "start" {
+                ./modules/vm-start.ps1 `
+                  -VMName $vmName `
+                  -ResourceGroup $rg
+              }
 
-          switch ($action) {
+              "stop" {
+                ./modules/vm-stop.ps1 `
+                  -VMName $vmName `
+                  -ResourceGroup $rg
+              }
 
-          "start" {
+              "status" {
+                ./modules/vm-status.ps1 `
+                  -VMName $vmName `
+                  -ResourceGroup $rg
+              }
 
-            ./modules/vm-start.ps1 `
-              -VMName $vmName `
-              -ResourceGroup $rg
-          }
+              "snapshot" {
+                ./modules/vm-snapshot.ps1 `
+                  -VMName $vmName `
+                  -ResourceGroup $rg
+              }
 
-          "stop" {
- 
-            ./modules/vm-stop.ps1 `
-              -VMName $vmName `
-              -ResourceGroup $rg
-          }
+              "start-tag" {
+                ./modules/vm-start-tag.ps1
+              }
 
-           "status" {
+              "stop-tag" {
+                ./modules/vm-stop-tag.ps1
+              }
 
-            ./modules/vm-status.ps1 `
-              -VMName $vmName `
-              -ResourceGroup $rg
-          }
-
-          "snapshot" {
-
-            ./modules/vm-snapshot.ps1 `
-              -VMName $vmName `
-              -ResourceGroup $rg
-          }
-
-          default {
-
-            throw "Invalid action"
-          }
-
-          }
-
+              default {
+                throw "Invalid action"
+              }
+            }
           }
