@@ -9,8 +9,8 @@ Features:
 - RBAC-based authorization
 
 Technologies:
-PowerShell 7
-Azure PowerShell (Az module)
-GitHub Actions
-Azure RBAC
-OIDC federation
+- PowerShell 7
+- Azure PowerShell (Az module)
+- GitHub Actions
+- Azure RBAC
+- OIDC federation
