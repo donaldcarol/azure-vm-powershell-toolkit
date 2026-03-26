@@ -69,7 +69,7 @@ jobs:
 
             $vms = Get-AzVM
 
-            $vms | ForEach-Object -Parallel -ThrottleLimit 5 {
+            $vms | ForEach-Object -Parallel  {
               $name = $_.Name
               $resourceGroupName = $_.ResourceGroupName
 
@@ -100,7 +100,7 @@ jobs:
                   throw "Action '$using:action' is not supported with vmName=all"
                 }
               }
-            }
+            } -ThrottleLimit 5
           }
           else {
             switch ($action) {
