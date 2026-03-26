@@ -15,6 +15,9 @@ PowerShell automation toolkit for Azure VM lifecycle management using GitHub Act
 - Azure PowerShell (Az module)
 - GitHub Actions- Azure RBAC
 - OIDC federation
+<img width="1001" height="861" alt="image" src="https://github.com/user-attachments/assets/214bf85c-ad66-47bf-9193-3a39dca1f75b" />
+
+  
 
 ## Features
 
